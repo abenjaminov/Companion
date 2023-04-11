@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -10,6 +11,11 @@ namespace _Scripts
     public class MapGenerator : MonoBehaviour
     {
         public DrawMode drawMode;
+
+        [Header("Mesh")] 
+        public float heightMultiplier;
+        
+        [Header("General")]
         public bool autoUpdate;
         public int mapSize;
         public float noiseScale;
@@ -21,6 +27,15 @@ namespace _Scripts
         public Vector2 offset;
         public List<TerrainType> regions;
 
+        [MenuItem("MapGeneration/Generate Map %G")]
+        public static void GenerateMapStatic()
+        {
+            var mapGenerator = FindObjectOfType<MapGenerator>();
+            
+            mapGenerator.GenerateMap();
+        }
+        
+        
         public void GenerateMap()
         {
             var noiseMap = Noise.GenerateNoiseMap(new GenerateNoiseMapOptions()
@@ -38,13 +53,28 @@ namespace _Scripts
             {
                 DrawColorMap(noiseMap);
             }
-            else
+            else if(drawMode == DrawMode.NoiseMap)
             {
                 mapDisplay.DrawTexture(noiseMap);    
             }
+            else if (drawMode == DrawMode.Mesh)
+            {
+                DrawMesh(noiseMap);
+            }
         }
 
-        private void DrawColorMap(float[,] noiseMap)
+        private void DrawMesh(float[,] noiseMap)
+        {
+            var meshData = MeshGenerator.GenerateTerrainMeshData(new GenerateTerrainMeshDataOptions()
+            {
+                HeightMap = noiseMap,
+                HeightMultiplier = this.heightMultiplier
+            });
+            var colorMap = this.GetColorMapFromRegions(noiseMap);
+            mapDisplay.DrawMesh(meshData, colorMap, this.mapSize, this.mapSize);
+        }
+
+        private Color[] GetColorMapFromRegions(float[,] heightMap)
         {
             var colorMap = new Color[this.mapSize * this.mapSize];
             
@@ -52,14 +82,21 @@ namespace _Scripts
             {
                 for (var x = 0; x < this.mapSize; x++)
                 {
-                    var currentHeight = noiseMap[x, y];
+                    var currentHeight = heightMap[x, y];
 
                     var region = this.regions.First(region => currentHeight <= region.maxHeight);
 
                     colorMap[y * this.mapSize + x] = region.color;
                 }
             }
-            
+
+            return colorMap;
+        }
+        
+        private void DrawColorMap(float[,] noiseMap)
+        {
+            var colorMap = GetColorMapFromRegions(noiseMap);
+
             mapDisplay.DrawTexture(colorMap, this.mapSize, this.mapSize);
         }
 

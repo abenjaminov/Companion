@@ -5,11 +5,14 @@ namespace _Scripts
     public enum DrawMode
     {
         NoiseMap,
-        ColorMap
+        ColorMap,
+        Mesh
     }
 
     public class MapDisplay : MonoBehaviour
     {
+        public MeshFilter meshFilter;
+        public MeshRenderer meshRenderer;
         public Renderer textureRenderer;
 
         public void DrawTexture(float[,] noiseMap)
@@ -27,6 +30,15 @@ namespace _Scripts
             var texture = TextureGenerator.TextureFromColorMap(colorMap, width, height);
 
             SetTextureOnRenderer(texture, width, height);
+        }
+
+        public void DrawMesh(MeshData meshData, Color[] colorMap, int width, int height)
+        {
+            meshFilter.sharedMesh = meshData.CreateMesh();
+            
+            var texture = TextureGenerator.TextureFromColorMap(colorMap, width, height);
+
+            meshRenderer.sharedMaterial.mainTexture = texture;
         }
 
         private void SetTextureOnRenderer(Texture2D texture, int width, int height)
