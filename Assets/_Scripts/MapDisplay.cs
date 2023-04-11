@@ -2,30 +2,35 @@ using UnityEngine;
 
 namespace _Scripts
 {
+    public enum DrawMode
+    {
+        NoiseMap,
+        ColorMap
+    }
+
     public class MapDisplay : MonoBehaviour
     {
         public Renderer textureRenderer;
 
-        public void DrawNoiseMap(float[,] noiseMap)
+        public void DrawTexture(float[,] noiseMap)
         {
             var width = noiseMap.GetLength(0);
             var height = noiseMap.GetLength(1);
-
-            var texture = new Texture2D(width, height);
-
-            var colorMap = new Color[width * height];
-
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    colorMap[y * width + x] = Color.Lerp(Color.black, Color.white, noiseMap[x, y]);
-                }
-            }
             
-            texture.SetPixels(colorMap);
-            texture.Apply();
+            var texture = TextureGenerator.TextureFromHeightMap(noiseMap, width, height);
 
+            SetTextureOnRenderer(texture, width, height);
+        }
+        
+        public void DrawTexture(Color[] colorMap, int width, int height)
+        {
+            var texture = TextureGenerator.TextureFromColorMap(colorMap, width, height);
+
+            SetTextureOnRenderer(texture, width, height);
+        }
+
+        private void SetTextureOnRenderer(Texture2D texture, int width, int height)
+        {
             textureRenderer.sharedMaterial.mainTexture = texture;
             textureRenderer.transform.localScale = new Vector3(width, 1, height);
         }

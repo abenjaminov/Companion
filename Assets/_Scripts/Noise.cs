@@ -8,7 +8,7 @@ namespace _Scripts
     [Serializable]
     public struct Octave
     {
-        public int DetailsLevel;
+        public int detailsLevel;
     }
     
     public struct GenerateNoiseMapOptions
@@ -60,13 +60,15 @@ namespace _Scripts
                 for (var x = 0; x < options.Size; x++)
                 {
                     var noiseHeight = 0f;
+                    var amplitude = 1f;
+                    var frequency = 1f;
                     
                     for (var i = 0; i < options.Octaves.Count; i++)
                     {
                         var octave = options.Octaves[i];
                         
-                        var amplitude = Mathf.Pow(options.Persistance, octave.DetailsLevel);
-                        var frequency = Mathf.Pow(options.Lacunarity, octave.DetailsLevel);
+                        // var amplitude = Mathf.Pow(options.Persistance, octave.detailsLevel);
+                        // var frequency = Mathf.Pow(options.Lacunarity, octave.detailsLevel);
                         
                         var sampleX = (x - center.x) / scale * frequency + octaveOffsets[i].x;
                         var sampleY = (y - center.y) / scale * frequency + octaveOffsets[i].y;;
@@ -74,6 +76,9 @@ namespace _Scripts
                         var perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
 
                         noiseHeight += perlinValue * amplitude;
+
+                        amplitude *= options.Persistance;
+                        frequency *= options.Lacunarity;
                     }
 
                     if (noiseHeight > maxNoiseHeight)
