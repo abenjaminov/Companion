@@ -14,12 +14,12 @@ namespace _Scripts
         public int mapSize;
         public float noiseScale;
         public MapDisplay mapDisplay;
+        public int numberOfOctaves;
         [Range(.001f,1)] public float persistance;
         public float lacunarity;
         public int seed;
         public Vector2 offset;
         public List<TerrainType> regions;
-        public List<Octave> octaves;
 
         public void GenerateMap()
         {
@@ -29,7 +29,7 @@ namespace _Scripts
                 Size = this.mapSize,
                 Persistance = this.persistance,
                 Lacunarity = this.lacunarity,
-                Octaves = this.octaves,
+                NumberOfOctaves = this.numberOfOctaves,
                 Offset = this.offset,
                 Seed = this.seed
             });

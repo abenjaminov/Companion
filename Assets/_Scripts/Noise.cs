@@ -5,17 +5,11 @@ using Random = System.Random;
 
 namespace _Scripts
 {
-    [Serializable]
-    public struct Octave
-    {
-        public int detailsLevel;
-    }
-    
     public struct GenerateNoiseMapOptions
     {
         public int Size;
         public float Scale;
-        public List<Octave> Octaves;
+        public int NumberOfOctaves;
         public float Persistance;
         public float Lacunarity;
         public int Seed; // This option is so that we can get different and unique noise maps
@@ -34,7 +28,7 @@ namespace _Scripts
             
             // We want each octave to be sampled from a different location on the
             // perlin noise
-            foreach (var octave in options.Octaves)
+            for(int i = 0; i < options.NumberOfOctaves; i++)
             {
                 var offsetX = prng.Next(-100000, 100000) + options.Offset.x;
                 var offsetY = prng.Next(-100000, 100000) + options.Offset.y;
@@ -63,13 +57,8 @@ namespace _Scripts
                     var amplitude = 1f;
                     var frequency = 1f;
                     
-                    for (var i = 0; i < options.Octaves.Count; i++)
+                    for (var i = 0; i < options.NumberOfOctaves; i++)
                     {
-                        var octave = options.Octaves[i];
-                        
-                        // var amplitude = Mathf.Pow(options.Persistance, octave.detailsLevel);
-                        // var frequency = Mathf.Pow(options.Lacunarity, octave.detailsLevel);
-                        
                         var sampleX = (x - center.x) / scale * frequency + octaveOffsets[i].x;
                         var sampleY = (y - center.y) / scale * frequency + octaveOffsets[i].y;;
 
