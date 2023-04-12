@@ -15,7 +15,7 @@ namespace _Scripts.Editor
             
             if ((isUpdatedGUI && mapGenerator.autoUpdate) || isGenerateClicked)
             {
-                mapGenerator.GenerateMap();
+                mapGenerator.DrawMapInEditor();
             }
         }
     }

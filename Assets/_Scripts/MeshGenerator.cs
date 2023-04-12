@@ -14,6 +14,7 @@ namespace _Scripts
     {
         public static MeshData GenerateTerrainMeshData(GenerateTerrainMeshDataOptions options)
         {
+            var heightMultiplierCurve = new AnimationCurve(options.MeshHeightCurve.keys);
             var heightMap = options.HeightMap;
             
             var width = heightMap.GetLength(0);
@@ -34,7 +35,7 @@ namespace _Scripts
             {
                 for (int x = 0; x < width; x += meshSimplificationIncrement)
                 {
-                    var meshHeight = options.MeshHeightCurve.Evaluate(heightMap[x, y]) * options.HeightMultiplier;
+                    var meshHeight = heightMultiplierCurve.Evaluate(heightMap[x, y]) * options.HeightMultiplier;
                     meshData.vertices[vertexIndex] = new Vector3(topLeftX + x, meshHeight, topLeftZ - y);
                     meshData.uvs[vertexIndex] = new Vector2(x / (float)width, y / (float)height);
                     
