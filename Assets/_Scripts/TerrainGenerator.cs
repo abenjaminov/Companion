@@ -14,8 +14,9 @@ namespace _Scripts
         public float playerMoveThresholdForUpdate = 25;
         public float SquarePlayerMoveThresholdForUpdate => playerMoveThresholdForUpdate * playerMoveThresholdForUpdate;
         
-        private static Vector2 _playerPosition;
+        private static Vector2 _playerPosition = Vector2.zero;
         private static Vector2 _playerPositionOld;
+        private bool _isFirstUpdate = true;
         private static MapGenerator _mapGenerator;
         private int _terrainBlockSize;
         private int _terrainBlocksVisibleInViewDistance;
@@ -35,8 +36,6 @@ namespace _Scripts
             _terrainBlocksVisibleInViewDistance = Mathf.RoundToInt(MaxViewDistance / _terrainBlockSize);
 
             TerrainChannel.OnUpdateTerrainBlock += UpdateBlockVisibility;
-            
-            UpdateVisibleTerrainBlocks();
         }
 
         void UpdateVisibleTerrainBlocks()
@@ -56,12 +55,7 @@ namespace _Scripts
                     if (_terrainBlockDict.TryGetValue(viewedBlockCoord, out var value))
                     {
                         UpdateBlockVisibility(value);
-                        
-                        if (value.IsVisible)
-                        {
-                            _terrainBlocksVisibleLastUpdate.Add(value);
-                        }
-                        
+
                         continue;
                     }
 
@@ -88,6 +82,11 @@ namespace _Scripts
                 block.SetDetailLevel(levelOfDetails ?? levelOfDetailInfos[^1]);
             }
             
+            if (isBlockVisible)
+            {
+                _terrainBlocksVisibleLastUpdate.Add(block);
+            }
+            
             block.SetVisible(isBlockVisible);
         }
 
@@ -96,9 +95,16 @@ namespace _Scripts
             var playerPositionTemp = player.position;
             _playerPosition = new Vector2(playerPositionTemp.x, playerPositionTemp.z);
 
-            if ((_playerPositionOld - _playerPosition).sqrMagnitude > SquarePlayerMoveThresholdForUpdate)
+            if ((_playerPositionOld - _playerPosition).sqrMagnitude >= SquarePlayerMoveThresholdForUpdate)
             {
                 _playerPositionOld = _playerPosition;
+                UpdateVisibleTerrainBlocks();
+                return;
+            }
+            
+            if (_isFirstUpdate)
+            {
+                _isFirstUpdate = false;
                 UpdateVisibleTerrainBlocks();
             }
         }
