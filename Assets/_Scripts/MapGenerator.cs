@@ -10,14 +10,18 @@ namespace _Scripts
     [RequireComponent(typeof(MapDisplay))]
     public class MapGenerator : MonoBehaviour
     {
+        private const int MapChunkSize = 241;
+        
         public DrawMode drawMode;
 
         [Header("Mesh")] 
         public float heightMultiplier;
-        
-        [Header("General")]
+
+        public AnimationCurve meshHeightCurve;
+
+        [Header("General")] 
+        [Range(0,6)] public int LevelOfDetails;
         public bool autoUpdate;
-        public int mapSize;
         public float noiseScale;
         public MapDisplay mapDisplay;
         public int numberOfOctaves;
@@ -41,7 +45,7 @@ namespace _Scripts
             var noiseMap = Noise.GenerateNoiseMap(new GenerateNoiseMapOptions()
             {
                 Scale = this.noiseScale,
-                Size = this.mapSize,
+                Size = MapChunkSize,
                 Persistance = this.persistance,
                 Lacunarity = this.lacunarity,
                 NumberOfOctaves = this.numberOfOctaves,
@@ -68,25 +72,27 @@ namespace _Scripts
             var meshData = MeshGenerator.GenerateTerrainMeshData(new GenerateTerrainMeshDataOptions()
             {
                 HeightMap = noiseMap,
-                HeightMultiplier = this.heightMultiplier
+                HeightMultiplier = this.heightMultiplier,
+                MeshHeightCurve = this.meshHeightCurve,
+                LevelOfDetail = this.LevelOfDetails
             });
             var colorMap = this.GetColorMapFromRegions(noiseMap);
-            mapDisplay.DrawMesh(meshData, colorMap, this.mapSize, this.mapSize);
+            mapDisplay.DrawMesh(meshData, colorMap, MapChunkSize, MapChunkSize);
         }
 
         private Color[] GetColorMapFromRegions(float[,] heightMap)
         {
-            var colorMap = new Color[this.mapSize * this.mapSize];
+            var colorMap = new Color[MapChunkSize * MapChunkSize];
             
-            for (var y = 0; y < this.mapSize; y++)
+            for (var y = 0; y < MapChunkSize; y++)
             {
-                for (var x = 0; x < this.mapSize; x++)
+                for (var x = 0; x < MapChunkSize; x++)
                 {
                     var currentHeight = heightMap[x, y];
 
                     var region = this.regions.First(region => currentHeight <= region.maxHeight);
 
-                    colorMap[y * this.mapSize + x] = region.color;
+                    colorMap[y * MapChunkSize + x] = region.color;
                 }
             }
 
@@ -97,16 +103,11 @@ namespace _Scripts
         {
             var colorMap = GetColorMapFromRegions(noiseMap);
 
-            mapDisplay.DrawTexture(colorMap, this.mapSize, this.mapSize);
+            mapDisplay.DrawTexture(colorMap, MapChunkSize, MapChunkSize);
         }
 
         private void OnValidate()
         {
-            if (this.mapSize < 1)
-            {
-                this.mapSize = 1;
-            }
-
             if (this.lacunarity < 1)
             {
                 this.lacunarity = 1;
