@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using _Scripts.Types;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -20,8 +21,9 @@ namespace _Scripts
 
         public AnimationCurve meshHeightCurve;
 
+        [FormerlySerializedAs("levelOfDetails")]
         [Header("General")]
-        [Range(0,6)] public int levelOfDetails;
+        [Range(0,6)] public int editorPreviewLevelOfDetail;
         public bool autoUpdate;
         public float noiseScale;
         public MapDisplay mapDisplay;
@@ -46,22 +48,22 @@ namespace _Scripts
         {
             var mapGenerator = FindObjectOfType<MapGenerator>();
             
-            mapGenerator.GenerateMapData();
+            mapGenerator.GenerateMapData(Vector2.zero);
         }
 
-        public void RequestMapData(Action<MapData> callback)
+        public void RequestMapData(Vector2 center, Action<MapData> callback)
         {
             var threadStart = new ThreadStart(() =>
             {
-                MapDataThread(callback);
+                MapDataThread(center, callback);
             });
 
             new Thread(threadStart).Start();
         }
 
-        private void MapDataThread(Action<MapData> callback)
+        private void MapDataThread(Vector2 center, Action<MapData> callback)
         {
-            var mapData = GenerateMapData();
+            var mapData = GenerateMapData(center);
             
             lock (mapThreadInfoQueue)
             {
@@ -69,29 +71,29 @@ namespace _Scripts
             }
         }
         
-        public void RequestMeshData(MapData mapData, Action<MeshData> callback)
+        public void RequestMeshData(RequestMeshDataArgs args)
         {
             var threadStart = new ThreadStart(() =>
             {
-                MeshDataThread(mapData, callback);
+                MeshDataThread(args);
             });
 
             new Thread(threadStart).Start();
         }
 
-        private void MeshDataThread(MapData mapData, Action<MeshData> callback)
+        private void MeshDataThread(RequestMeshDataArgs args)
         {
             var meshData = MeshGenerator.GenerateTerrainMeshData(new GenerateTerrainMeshDataOptions()
             {
-                HeightMap = mapData.heightMap,
+                HeightMap = args.MapData.heightMap,
                 HeightMultiplier = heightMultiplier,
                 MeshHeightCurve = meshHeightCurve,
-                LevelOfDetail = levelOfDetails
+                LevelOfDetail = args.LevelOfDetails
             });
             
             lock (meshThreadInfoQueue)
             {
-                meshThreadInfoQueue.Enqueue(new MapThreadInfo<MeshData>(meshData, callback));    
+                meshThreadInfoQueue.Enqueue(new MapThreadInfo<MeshData>(meshData, args.Callback));    
             }
         }
 
@@ -129,7 +131,7 @@ namespace _Scripts
             }
         }
 
-        public MapData GenerateMapData()
+        public MapData GenerateMapData(Vector2 center)
         {
             var heightMap = Noise.GenerateNoiseMap(new GenerateNoiseMapOptions()
             {
@@ -138,7 +140,7 @@ namespace _Scripts
                 Persistance = this.persistance,
                 Lacunarity = this.lacunarity,
                 NumberOfOctaves = this.numberOfOctaves,
-                Offset = this.offset,
+                Offset = center + this.offset,
                 Seed = this.seed
             });
 
@@ -153,7 +155,7 @@ namespace _Scripts
 
         public void DrawMapInEditor()
         {
-            var mapData = this.GenerateMapData();
+            var mapData = this.GenerateMapData(Vector2.zero);
             if (drawMode == DrawMode.ColorMap)
             {
                 DrawColorMap(mapData);
@@ -175,7 +177,7 @@ namespace _Scripts
                 HeightMap = mapData.heightMap,
                 HeightMultiplier = this.heightMultiplier,
                 MeshHeightCurve = this.meshHeightCurve,
-                LevelOfDetail = this.levelOfDetails
+                LevelOfDetail = this.editorPreviewLevelOfDetail
             });
             mapDisplay.DrawMesh(meshData, mapData.colorMap, TerrainBlockSize, TerrainBlockSize);
         }

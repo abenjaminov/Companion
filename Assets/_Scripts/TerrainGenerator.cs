@@ -1,28 +1,42 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using _Scripts.Types;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace _Scripts
 {
     public class TerrainGenerator : MonoBehaviour
     {
-        private const float MaxViewDistance = 450;
+        private static float MaxViewDistance;
         public Transform player;
-
+        public float playerMoveThresholdForUpdate = 25;
+        public float SquarePlayerMoveThresholdForUpdate => playerMoveThresholdForUpdate * playerMoveThresholdForUpdate;
+        
         private static Vector2 _playerPosition;
+        private static Vector2 _playerPositionOld;
         private static MapGenerator _mapGenerator;
         private int _terrainBlockSize;
         private int _terrainBlocksVisibleInViewDistance;
 
         public GameObject terrainBlockPrefab;
+
+        public List<LevelOfDetailInfo> levelOfDetailInfos;
         
         private readonly Dictionary<Vector2, TerrainBlock> _terrainBlockDict = new();
         private readonly List<TerrainBlock> _terrainBlocksVisibleLastUpdate = new();
+        
         private void Start()
         {
+            MaxViewDistance = levelOfDetailInfos[^1].visibleDistanceThreshold;
             _mapGenerator = FindObjectOfType<MapGenerator>();
             _terrainBlockSize = MapGenerator.TerrainBlockSize - 1;
             _terrainBlocksVisibleInViewDistance = Mathf.RoundToInt(MaxViewDistance / _terrainBlockSize);
+
+            TerrainChannel.OnUpdateTerrainBlock += UpdateBlockVisibility;
+            
+            UpdateVisibleTerrainBlocks();
         }
 
         void UpdateVisibleTerrainBlocks()
@@ -51,7 +65,12 @@ namespace _Scripts
                         continue;
                     }
 
-                    var terrainBlock = new TerrainBlock(viewedBlockCoord, _terrainBlockSize, this.transform, terrainBlockPrefab);
+                    var terrainBlock = new TerrainBlock(viewedBlockCoord, 
+                        _terrainBlockSize, 
+                        transform, 
+                        terrainBlockPrefab,
+                        levelOfDetailInfos);
+                    
                     _terrainBlockDict.Add(viewedBlockCoord, terrainBlock);
                 }   
             }
@@ -61,6 +80,14 @@ namespace _Scripts
         {
             var playerDistanceFromNearestEdge = Mathf.Sqrt(block.Bounds.SqrDistance(_playerPosition));
             var isBlockVisible = playerDistanceFromNearestEdge <= MaxViewDistance;
+
+            if (isBlockVisible)
+            {
+                var levelOfDetails =
+                    levelOfDetailInfos.FirstOrDefault(x => playerDistanceFromNearestEdge <= x.visibleDistanceThreshold);
+                block.SetDetailLevel(levelOfDetails ?? levelOfDetailInfos[^1]);
+            }
+            
             block.SetVisible(isBlockVisible);
         }
 
@@ -68,8 +95,12 @@ namespace _Scripts
         {
             var playerPositionTemp = player.position;
             _playerPosition = new Vector2(playerPositionTemp.x, playerPositionTemp.z);
-            
-            UpdateVisibleTerrainBlocks();
+
+            if ((_playerPositionOld - _playerPosition).sqrMagnitude > SquarePlayerMoveThresholdForUpdate)
+            {
+                _playerPositionOld = _playerPosition;
+                UpdateVisibleTerrainBlocks();
+            }
         }
     }
 }

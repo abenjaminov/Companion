@@ -1,21 +1,29 @@
 using System;
+using _Scripts.Types;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace _Scripts
 {
     public static class TerrainChannel
     {
-        public static UnityAction<Action<MapData>> OnRequestMapDataEvent;
-        public static UnityAction<MapData, Action<MeshData>> OnRequestMeshDataEvent;
+        public static UnityAction<Vector2, Action<MapData>> OnRequestMapDataEvent;
+        public static UnityAction<RequestMeshDataArgs> OnRequestMeshDataEvent;
+        public static UnityAction<TerrainBlock> OnUpdateTerrainBlock;
 
-        public static void RequestMapData(Action<MapData> callback)
+        public static void RequestMapData(Vector2 center, Action<MapData> callback)
         {
-            OnRequestMapDataEvent?.Invoke(callback);
+            OnRequestMapDataEvent?.Invoke(center, callback);
         }
 
-        public static void RequestMeshData(MapData mapData, Action<MeshData> callback)
+        public static void RequestMeshData(RequestMeshDataArgs args)
         {
-            OnRequestMeshDataEvent?.Invoke(mapData, callback);
+            OnRequestMeshDataEvent?.Invoke(args);
+        }
+
+        public static void UpdateTerrainBlock(TerrainBlock block)
+        {
+            OnUpdateTerrainBlock?.Invoke(block);
         }
     }
 }

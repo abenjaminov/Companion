@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace _Scripts
+namespace _Scripts.Types
 {
     [Serializable]
     public struct TerrainType : IComparable<TerrainType>

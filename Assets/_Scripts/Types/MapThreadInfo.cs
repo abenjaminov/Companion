@@ -1,6 +1,6 @@
 using System;
 
-namespace _Scripts
+namespace _Scripts.Types
 {
     public struct MapThreadInfo<T>
     {
