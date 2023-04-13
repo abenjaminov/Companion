@@ -18,11 +18,16 @@ namespace _Scripts
 
     public static class Noise
     {
+        static float _minNoiseHeight = float.MaxValue;
+        static float _maxNoiseHeight = float.MinValue;
+        
         public static float[,] GenerateNoiseMap(GenerateNoiseMapOptions options)
         {
             var noiseMap = new float[options.Size, options.Size];
 
             var prng = new Random(options.Seed);
+
+            Debug.Log(_minNoiseHeight + " " + _maxNoiseHeight);
 
             var octaveOffsets = new List<Vector2>();
             
@@ -31,7 +36,7 @@ namespace _Scripts
             for(int i = 0; i < options.NumberOfOctaves; i++)
             {
                 var offsetX = prng.Next(-100000, 100000) + options.Offset.x;
-                var offsetY = prng.Next(-100000, 100000) + options.Offset.y;
+                var offsetY = prng.Next(-100000, 100000) - options.Offset.y;
                 
                 octaveOffsets.Add(new Vector2(offsetX, offsetY));
             }
@@ -43,9 +48,6 @@ namespace _Scripts
             {
                 scale = .0001f;
             }
-
-            var maxNoiseHeight = float.MinValue;
-            var minNoiseHeight = float.MaxValue;
 
             var center = new Vector2(options.Size / 2f, options.Size / 2f);
             
@@ -59,8 +61,8 @@ namespace _Scripts
                     
                     for (var i = 0; i < options.NumberOfOctaves; i++)
                     {
-                        var sampleX = (x - center.x) / scale * frequency + octaveOffsets[i].x;
-                        var sampleY = (y - center.y) / scale * frequency + octaveOffsets[i].y;;
+                        var sampleX = (x - center.x + octaveOffsets[i].x) / scale * frequency;
+                        var sampleY = (y - center.y + octaveOffsets[i].y) / scale * frequency;
 
                         var perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
 
@@ -70,13 +72,13 @@ namespace _Scripts
                         frequency *= options.Lacunarity;
                     }
 
-                    if (noiseHeight > maxNoiseHeight)
+                    if (noiseHeight > _maxNoiseHeight)
                     {
-                        maxNoiseHeight = noiseHeight;
+                        _maxNoiseHeight = noiseHeight;
                     }
-                    else if (noiseHeight < minNoiseHeight)
+                    else if (noiseHeight < _minNoiseHeight)
                     {
-                        minNoiseHeight = noiseHeight;
+                        _minNoiseHeight = noiseHeight;
                     }
                     
                     noiseMap[x, y] = noiseHeight;
@@ -88,7 +90,7 @@ namespace _Scripts
             {
                 for (var x = 0; x < options.Size; x++)
                 {
-                    noiseMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]);
+                    noiseMap[x, y] = Mathf.InverseLerp(_minNoiseHeight, _maxNoiseHeight, noiseMap[x, y]);
                 }
             }
 

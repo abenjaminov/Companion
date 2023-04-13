@@ -69,7 +69,7 @@ namespace _Scripts
                 }   
             }
         }
-        
+
         private void UpdateBlockVisibility(TerrainBlock block)
         {
             var playerDistanceFromNearestEdge = Mathf.Sqrt(block.Bounds.SqrDistance(_playerPosition));

@@ -204,9 +204,9 @@ namespace _Scripts
                 {
                     var currentHeight = heightMap[x, y];
 
-                    // var region = this.regions.First(region => currentHeight <= region.maxHeight);
+                    var region = this.regions.First(region => currentHeight <= region.maxHeight);
 
-                    colorMap[y * TerrainBlockSize + x] = gradiant.Evaluate(currentHeight);
+                    colorMap[y * TerrainBlockSize + x] = region.color; //gradiant.Evaluate(currentHeight);
                 }
             }
 

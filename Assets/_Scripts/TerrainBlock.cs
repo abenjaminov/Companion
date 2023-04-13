@@ -18,14 +18,16 @@ namespace _Scripts
         private bool _mapDataReceived;
 
         private LevelOfDetailInfo previousLevelOfDetailInfo;
+
+        private Vector2 _position;
         
         public TerrainBlock(Vector2 coord, int size, Transform parent, GameObject prefab, List<LevelOfDetailInfo> detailLevels)
         {
-            var position = coord * size;
-            Bounds = new Bounds(position, Vector2.one * size);
+            _position = coord * size;
+            Bounds = new Bounds(_position, Vector2.one * size);
 
             _meshObject = Object.Instantiate(prefab, parent);
-            _meshObject.transform.position = new Vector3(position.x, 0, position.y);
+            _meshObject.transform.position = new Vector3(_position.x, 0, _position.y);
             //_meshObject.transform.localScale = Vector3.one * size;
             _meshObject.name = "Terrain Block";
 
@@ -41,8 +43,8 @@ namespace _Scripts
                     detailLevelInfo.visibleDistanceThreshold, 
                     new LevelOfDetailMesh(detailLevelInfo.levelOfDetail, this));
             }
-            
-            TerrainChannel.RequestMapData(position, OnMapDataReceived);
+
+            ReGenerate();
         }
 
         public void SetVisible(bool visible)
@@ -50,6 +52,12 @@ namespace _Scripts
             _meshObject.SetActive(visible);
         }
 
+        public void ReGenerate()
+        {
+            _mapDataReceived = false;
+            TerrainChannel.RequestMapData(_position, OnMapDataReceived);
+        }
+        
         public void SetDetailLevel(LevelOfDetailInfo info)
         {
             if (!_mapDataReceived) return;
