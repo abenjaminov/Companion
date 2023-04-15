@@ -11,6 +11,8 @@ namespace _Scripts.Player.States
         private readonly PlayerMovement _playerMovement;
         private readonly Animator _animator;
 
+        static readonly int JumpStateHash = Animator.StringToHash("Jump");
+        
         public JumpState(PlayerChannel playerChannel, PlayerMovement playerMovement, Animator animator)
         {
             _playerChannel = playerChannel;
@@ -22,7 +24,7 @@ namespace _Scripts.Player.States
         {
             IsJumpOver = false;
             _playerChannel.OnPlayerJumpAnimationEndEvent += OnPlayerJumpAnimationEndEvent;
-            _animator.CrossFade("Jump", 0, 0);
+            _animator.CrossFade(JumpStateHash, 0, 0);
         }
 
         private void OnPlayerJumpAnimationEndEvent()

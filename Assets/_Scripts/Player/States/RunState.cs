@@ -8,6 +8,8 @@ namespace _Scripts.Player.States
         private readonly PlayerMovement _playerMovement;
         private readonly Animator _animator;
         
+        static readonly int RunStateHash = Animator.StringToHash("Run");
+        
         public RunState(PlayerMovement playerMovement, Animator animator)
         {
             _playerMovement = playerMovement;
@@ -17,7 +19,7 @@ namespace _Scripts.Player.States
         public override void OnEnter()
         {
             _playerMovement.Run();
-            _animator.CrossFade("Run", 0, 0);
+            _animator.CrossFade(RunStateHash, 0, 0);
         }
 
         public override void OnExit()
