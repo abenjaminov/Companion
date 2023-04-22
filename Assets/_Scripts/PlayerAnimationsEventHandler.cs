@@ -12,5 +12,10 @@ namespace _Scripts
         {
             playerChannel.OnPlayerJumpAnimationEnd();
         }
+
+        public void OnGrabRifleEnd()
+        {
+            
+        }
     }
 }

@@ -7,10 +7,16 @@ namespace _Scripts.ScriptableObjects.Channels
     public class PlayerChannel : ScriptableObject
     {
         public UnityAction OnPlayerJumpAnimationEndEvent;
+        public UnityAction OnGrabRifleAnimationEndEvent;
 
         public void OnPlayerJumpAnimationEnd()
         {
             OnPlayerJumpAnimationEndEvent?.Invoke();
+        }
+        
+        public void OnGrabRifleAnimationEnd()
+        {
+            OnGrabRifleAnimationEndEvent?.Invoke();
         }
     }
 }

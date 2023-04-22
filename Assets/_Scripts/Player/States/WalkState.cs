@@ -11,6 +11,9 @@ namespace _Scripts.Player.States
         static readonly int WalkStateHash = Animator.StringToHash("Walk");
         static readonly int WalkStrafeLeftStateHash = Animator.StringToHash("Walk Strafe Left");
         static readonly int WalkStrafeRightStateHash = Animator.StringToHash("Walk Strafe Right");
+        static readonly int WalkBackStateHash = Animator.StringToHash("Walk Back");
+        static readonly int WalkStrafeLeftBackStateHash = Animator.StringToHash("Walk Strafe Left Back");
+        static readonly int WalkStrafeRightBackStateHash = Animator.StringToHash("Walk Strafe Right Back");
 
         private int currentStateHash = -1;
         
@@ -22,10 +25,12 @@ namespace _Scripts.Player.States
 
         private void SetAnimation()
         {
-            int newStateHash = WalkStateHash;
+            int newStateHash = currentStateHash;
 
             if (_playerMovement.Velocity.z > 0)
             {
+                newStateHash = WalkStateHash;
+                
                 if (_playerMovement.Velocity.x < 0)
                 {
                     newStateHash = WalkStrafeLeftStateHash;
@@ -33,6 +38,19 @@ namespace _Scripts.Player.States
                 else if(_playerMovement.Velocity.x > 0)
                 {
                     newStateHash = WalkStrafeRightStateHash;
+                }
+            }
+            else if (_playerMovement.Velocity.z < 0)
+            {
+                newStateHash = WalkBackStateHash;
+                
+                if (_playerMovement.Velocity.x < 0)
+                {
+                    newStateHash = WalkStrafeLeftBackStateHash;
+                }
+                else if(_playerMovement.Velocity.x > 0)
+                {
+                    newStateHash = WalkStrafeRightBackStateHash;
                 }
             }
 

@@ -12,6 +12,10 @@ namespace _Scripts.Player.States
         static readonly int RunStafeLeftStateHash = Animator.StringToHash("Run Strafe Left");
         static readonly int RunStrafeRightStateHash = Animator.StringToHash("Run Strafe Right");
         
+        static readonly int RunBackStateHash = Animator.StringToHash("Run Back");
+        static readonly int RunStafeLeftBackStateHash = Animator.StringToHash("Run Strafe Left Back");
+        static readonly int RunStrafeRightBackStateHash = Animator.StringToHash("Run Strafe Right Back");
+        
         private int currentStateHash = -1;
         
         public RunState(PlayerMovement playerMovement, Animator animator)
@@ -22,10 +26,11 @@ namespace _Scripts.Player.States
         
         private void SetAnimation()
         {
-            int newStateHash = RunStateHash;
+            int newStateHash = currentStateHash;
 
             if (_playerMovement.Velocity.z > 0)
             {
+                newStateHash = RunStateHash;
                 if (_playerMovement.Velocity.x < 0)
                 {
                     newStateHash = RunStafeLeftStateHash;
@@ -33,6 +38,19 @@ namespace _Scripts.Player.States
                 else if(_playerMovement.Velocity.x > 0)
                 {
                     newStateHash = RunStrafeRightStateHash;
+                }
+            }
+            else if (_playerMovement.Velocity.z < 0)
+            {
+                newStateHash = RunBackStateHash;
+                
+                if (_playerMovement.Velocity.x < 0)
+                {
+                    newStateHash = RunStafeLeftBackStateHash;
+                }
+                else if(_playerMovement.Velocity.x > 0)
+                {
+                    newStateHash = RunStrafeRightBackStateHash;
                 }
             }
 
