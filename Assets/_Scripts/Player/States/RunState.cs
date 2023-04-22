@@ -1,3 +1,4 @@
+using _Scripts.Player.Types;
 using _Scripts.States;
 using UnityEngine;
 
@@ -6,59 +7,56 @@ namespace _Scripts.Player.States
     public class RunState : State
     {
         private readonly PlayerMovement _playerMovement;
+        private readonly PlayerGameState _playerGameState;
         private readonly Animator _animator;
+
+        private int _currentStateHash = -1;
         
-        static readonly int RunStateHash = Animator.StringToHash("Run");
-        static readonly int RunStafeLeftStateHash = Animator.StringToHash("Run Strafe Left");
-        static readonly int RunStrafeRightStateHash = Animator.StringToHash("Run Strafe Right");
-        
-        static readonly int RunBackStateHash = Animator.StringToHash("Run Back");
-        static readonly int RunStafeLeftBackStateHash = Animator.StringToHash("Run Strafe Left Back");
-        static readonly int RunStrafeRightBackStateHash = Animator.StringToHash("Run Strafe Right Back");
-        
-        private int currentStateHash = -1;
-        
-        public RunState(PlayerMovement playerMovement, Animator animator)
+        public RunState(PlayerMovement playerMovement, Animator animator, PlayerGameState playerGameState)
         {
             _playerMovement = playerMovement;
             _animator = animator;
+            _playerGameState = playerGameState;
         }
         
         private void SetAnimation()
         {
-            int newStateHash = currentStateHash;
+            var animationHashDict =
+                PlayerConsts.WeaponTypeToStateTypeToAnimationHash[_playerGameState.CurrentWeaponType];
+            
+            int newStateHash = _currentStateHash;
 
             if (_playerMovement.Velocity.z > 0)
             {
-                newStateHash = RunStateHash;
+                newStateHash = animationHashDict[StateType.Run];
                 if (_playerMovement.Velocity.x < 0)
                 {
-                    newStateHash = RunStafeLeftStateHash;
+                    newStateHash = animationHashDict[StateType.RunStrafeLeft];
                 }
                 else if(_playerMovement.Velocity.x > 0)
                 {
-                    newStateHash = RunStrafeRightStateHash;
+                    newStateHash = animationHashDict[StateType.RunStrafeRight];
                 }
             }
             else if (_playerMovement.Velocity.z < 0)
             {
-                newStateHash = RunBackStateHash;
+                newStateHash = animationHashDict[StateType.RunBack];
                 
                 if (_playerMovement.Velocity.x < 0)
                 {
-                    newStateHash = RunStafeLeftBackStateHash;
+                    newStateHash = animationHashDict[StateType.RunStrafeLeftBack];
                 }
                 else if(_playerMovement.Velocity.x > 0)
                 {
-                    newStateHash = RunStrafeRightBackStateHash;
+                    newStateHash = animationHashDict[StateType.RunStrafeRightBack];
                 }
             }
 
-            if (newStateHash == currentStateHash) return;
+            if (newStateHash == _currentStateHash) return;
             
             _animator.CrossFade(newStateHash,.25f,0);
 
-            currentStateHash = newStateHash;
+            _currentStateHash = newStateHash;
         }
         
         public override void OnEnter()
@@ -75,7 +73,7 @@ namespace _Scripts.Player.States
 
         public override void OnExit()
         {
-            Debug.Log("Run State Exit");
+            _currentStateHash = -1;
         }
     }
 }

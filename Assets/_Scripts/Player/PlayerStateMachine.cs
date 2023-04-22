@@ -7,12 +7,14 @@ using UnityEngine;
 namespace _Scripts.Player
 {
     [RequireComponent(typeof(PlayerMovement))]
+    [RequireComponent(typeof(PlayerGameState))]
     public class PlayerStateMachine : MonoBehaviour
     {
         [SerializeField] private InputReader inputReader;
         [SerializeField] private PlayerChannel playerChannel;
         [SerializeField] private Animator _animator;
         private PlayerMovement _playerMovement;
+        private PlayerGameState _playerGameState;
         
         private StateMachine _stateMachine;
 
@@ -24,8 +26,16 @@ namespace _Scripts.Player
         private void Start()
         {
             _playerMovement = GetComponent<PlayerMovement>();
+            _playerGameState = GetComponent<PlayerGameState>();
 
             SetupStateMachine();
+            
+            inputReader.OnToggleWeaponClickedEvent += OnToggleWeaponClickedEvent;
+        }
+
+        private void OnToggleWeaponClickedEvent()
+        {
+            
         }
 
         private void SetupStateMachine()
@@ -33,9 +43,9 @@ namespace _Scripts.Player
             _stateMachine = new StateMachine("Player");
             
             _idleState = new IdleState(_playerMovement, _animator);
-            _walkState = new WalkState(_playerMovement, _animator);
+            _walkState = new WalkState(_playerMovement, _animator, _playerGameState);
             _jumpState = new JumpState(playerChannel, _playerMovement, _animator);
-            _runState = new RunState(_playerMovement, _animator);
+            _runState = new RunState(_playerMovement, _animator, _playerGameState);
             
             _stateMachine.AddTransition(_idleState, _walkState, () => inputReader.IsMoving && !inputReader.IsRunning);
             _stateMachine.AddTransition(_idleState, _jumpState, () => inputReader.IsJump);

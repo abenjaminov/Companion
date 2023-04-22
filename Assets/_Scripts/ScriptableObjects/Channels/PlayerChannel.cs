@@ -8,7 +8,7 @@ namespace _Scripts.ScriptableObjects.Channels
     {
         public UnityAction OnPlayerJumpAnimationEndEvent;
         public UnityAction OnGrabRifleAnimationEndEvent;
-
+        
         public void OnPlayerJumpAnimationEnd()
         {
             OnPlayerJumpAnimationEndEvent?.Invoke();

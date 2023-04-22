@@ -64,6 +64,15 @@ namespace _Scripts.Systems.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleWeapon"",
+                    ""type"": ""Button"",
+                    ""id"": ""416a00b8-d041-40b9-9ca9-5a245174f84f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -154,6 +163,17 @@ namespace _Scripts.Systems.Input
                     ""action"": ""Run"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2457f0f3-fac9-43a3-b6a2-44c04c9c737e"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleWeapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -183,6 +203,7 @@ namespace _Scripts.Systems.Input
             m_PlayerGameplay_Jump = m_PlayerGameplay.FindAction("Jump", throwIfNotFound: true);
             m_PlayerGameplay_Look = m_PlayerGameplay.FindAction("Look", throwIfNotFound: true);
             m_PlayerGameplay_Run = m_PlayerGameplay.FindAction("Run", throwIfNotFound: true);
+            m_PlayerGameplay_ToggleWeapon = m_PlayerGameplay.FindAction("ToggleWeapon", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -248,6 +269,7 @@ namespace _Scripts.Systems.Input
         private readonly InputAction m_PlayerGameplay_Jump;
         private readonly InputAction m_PlayerGameplay_Look;
         private readonly InputAction m_PlayerGameplay_Run;
+        private readonly InputAction m_PlayerGameplay_ToggleWeapon;
         public struct PlayerGameplayActions
         {
             private @InputActions m_Wrapper;
@@ -256,6 +278,7 @@ namespace _Scripts.Systems.Input
             public InputAction @Jump => m_Wrapper.m_PlayerGameplay_Jump;
             public InputAction @Look => m_Wrapper.m_PlayerGameplay_Look;
             public InputAction @Run => m_Wrapper.m_PlayerGameplay_Run;
+            public InputAction @ToggleWeapon => m_Wrapper.m_PlayerGameplay_ToggleWeapon;
             public InputActionMap Get() { return m_Wrapper.m_PlayerGameplay; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -277,6 +300,9 @@ namespace _Scripts.Systems.Input
                 @Run.started += instance.OnRun;
                 @Run.performed += instance.OnRun;
                 @Run.canceled += instance.OnRun;
+                @ToggleWeapon.started += instance.OnToggleWeapon;
+                @ToggleWeapon.performed += instance.OnToggleWeapon;
+                @ToggleWeapon.canceled += instance.OnToggleWeapon;
             }
 
             private void UnregisterCallbacks(IPlayerGameplayActions instance)
@@ -293,6 +319,9 @@ namespace _Scripts.Systems.Input
                 @Run.started -= instance.OnRun;
                 @Run.performed -= instance.OnRun;
                 @Run.canceled -= instance.OnRun;
+                @ToggleWeapon.started -= instance.OnToggleWeapon;
+                @ToggleWeapon.performed -= instance.OnToggleWeapon;
+                @ToggleWeapon.canceled -= instance.OnToggleWeapon;
             }
 
             public void RemoveCallbacks(IPlayerGameplayActions instance)
@@ -325,6 +354,7 @@ namespace _Scripts.Systems.Input
             void OnJump(InputAction.CallbackContext context);
             void OnLook(InputAction.CallbackContext context);
             void OnRun(InputAction.CallbackContext context);
+            void OnToggleWeapon(InputAction.CallbackContext context);
         }
     }
 }

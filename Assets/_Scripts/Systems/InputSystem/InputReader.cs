@@ -1,5 +1,6 @@
 using _Scripts.Systems.Input;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace _Scripts.Systems.InputSystem
@@ -11,6 +12,8 @@ namespace _Scripts.Systems.InputSystem
         [HideInInspector] public bool IsJump;
         [HideInInspector] public Vector2 MouseDelta;
         [HideInInspector] public bool IsMoving;
+
+        public UnityAction OnToggleWeaponClickedEvent;
 
         private InputActions _controls;
         
@@ -56,6 +59,13 @@ namespace _Scripts.Systems.InputSystem
             {
                 IsRunning = false;
             }
+        }
+
+        public void OnToggleWeapon(InputAction.CallbackContext context)
+        {
+            if (!context.performed) return;
+            
+            OnToggleWeaponClickedEvent?.Invoke();
         }
     }
 }

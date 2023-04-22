@@ -95,7 +95,7 @@ ModelImporter:
       - time: 0.7255781
         functionName: OnGrabRifleEnd
         data: 
-        objectReferenceParameter: {instanceID: 0}
+        objectReferenceParameter: {fileID: 11500000, guid: c23d6298b7694304a91a73e74bc39698, type: 3}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0

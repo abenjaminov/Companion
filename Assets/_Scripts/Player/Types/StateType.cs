@@ -4,7 +4,17 @@ namespace _Scripts.Player.Types
     {
         Idle,
         Walk,
+        WalkStrafeLeft,
+        WalkStrafeRight,
+        WalkBack,
+        WalkStrafeLeftBack,
+        WalkStrafeRightBack,
         Run,
+        RunStrafeLeft,
+        RunStrafeRight,
+        RunBack,
+        RunStrafeLeftBack,
+        RunStrafeRightBack,
         Jump
     }
 }
