@@ -8,6 +8,7 @@ namespace _Scripts.Player
 {
     [RequireComponent(typeof(PlayerMovement))]
     [RequireComponent(typeof(PlayerGameState))]
+    [RequireComponent(typeof(PlayerAnimations))]
     public class PlayerStateMachine : MonoBehaviour
     {
         [SerializeField] private InputReader inputReader;
@@ -15,6 +16,7 @@ namespace _Scripts.Player
         [SerializeField] private Animator _animator;
         private PlayerMovement _playerMovement;
         private PlayerGameState _playerGameState;
+        private PlayerAnimations _playerAnimations;
         
         private StateMachine _stateMachine;
 
@@ -27,6 +29,7 @@ namespace _Scripts.Player
         {
             _playerMovement = GetComponent<PlayerMovement>();
             _playerGameState = GetComponent<PlayerGameState>();
+            _playerAnimations = GetComponent<PlayerAnimations>();
 
             SetupStateMachine();
             
@@ -42,7 +45,7 @@ namespace _Scripts.Player
         {
             _stateMachine = new StateMachine("Player");
             
-            _idleState = new IdleState(_playerMovement, _animator);
+            _idleState = new IdleState(_playerMovement, _animator, _playerAnimations);
             _walkState = new WalkState(_playerMovement, _animator, _playerGameState);
             _jumpState = new JumpState(playerChannel, _playerMovement, _animator);
             _runState = new RunState(_playerMovement, _animator, _playerGameState);

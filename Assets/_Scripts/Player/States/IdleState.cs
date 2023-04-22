@@ -1,3 +1,4 @@
+using _Scripts.Player.Types;
 using _Scripts.States;
 using UnityEngine;
 
@@ -7,24 +8,25 @@ namespace _Scripts.Player.States
     {
         private readonly Animator _animator;
         private PlayerMovement _playerMovement;
+        private PlayerAnimations _playerAnimations;
         
         static readonly int IdleStateHash = Animator.StringToHash("Idle");
         
-        public IdleState(PlayerMovement playerMovement, Animator animator)
+        public IdleState(PlayerMovement playerMovement, Animator animator, PlayerAnimations playerAnimations)
         {
             _animator = animator;
             _playerMovement = playerMovement;
-            
+            _playerAnimations = playerAnimations;
         }
         
         public override void OnEnter()
         {
             _playerMovement.Idle();
-            _animator.CrossFade(IdleStateHash, 0,0);
         }
 
-        public override void OnExit()
+        public override void Tick()
         {
+            _playerAnimations.UpdateAnimations(StateType.Idle);
         }
     }
 }
