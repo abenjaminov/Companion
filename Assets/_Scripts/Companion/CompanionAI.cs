@@ -33,6 +33,9 @@ namespace _Scripts.Companion
             var distance = Mathf.Sqrt((transform.position - _previousPosition).sqrMagnitude);
             CurrentSpeed = distance / Time.deltaTime;
             
+            var currentMovementF = Mathf.Min(.5f, CurrentSpeed / 4f);
+            GetComponentInChildren<Animator>().SetFloat("Movement_f", currentMovementF);
+            
             _previousPosition = _companionTransform.position;
         }
     }

@@ -25,7 +25,6 @@ namespace _Scripts.Player.States
 
         public override void OnExit()
         {
-            Debug.Log("Idle State Exit");
         }
     }
 }

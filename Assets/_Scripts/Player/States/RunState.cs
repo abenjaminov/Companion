@@ -9,6 +9,10 @@ namespace _Scripts.Player.States
         private readonly Animator _animator;
         
         static readonly int RunStateHash = Animator.StringToHash("Run");
+        static readonly int RunStafeLeftStateHash = Animator.StringToHash("Run Strafe Left");
+        static readonly int RunStrafeRightStateHash = Animator.StringToHash("Run Strafe Right");
+        
+        private int currentStateHash = -1;
         
         public RunState(PlayerMovement playerMovement, Animator animator)
         {
@@ -16,10 +20,39 @@ namespace _Scripts.Player.States
             _animator = animator;
         }
         
+        private void SetAnimation()
+        {
+            int newStateHash = RunStateHash;
+
+            if (_playerMovement.Velocity.z > 0)
+            {
+                if (_playerMovement.Velocity.x < 0)
+                {
+                    newStateHash = RunStafeLeftStateHash;
+                }
+                else if(_playerMovement.Velocity.x > 0)
+                {
+                    newStateHash = RunStrafeRightStateHash;
+                }
+            }
+
+            if (newStateHash == currentStateHash) return;
+            
+            _animator.CrossFade(newStateHash,.25f,0);
+
+            currentStateHash = newStateHash;
+        }
+        
         public override void OnEnter()
         {
             _playerMovement.Run();
-            _animator.CrossFade(RunStateHash, 0, 0);
+            SetAnimation();
+        }
+
+        public override void Tick()
+        {
+            _playerMovement.Run();
+            SetAnimation();
         }
 
         public override void OnExit()

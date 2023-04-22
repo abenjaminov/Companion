@@ -42,6 +42,8 @@ namespace _Scripts.States
                 Debug.LogError("There is no state selected for State Machine: " + Name);
             }
 
+            CurrentState?.Tick();
+            
             var allTransitions = _transitions.Where(x => x.From == CurrentState);
             var satisfyingTransition = allTransitions.FirstOrDefault(x => x.Predicate());
 
