@@ -9,8 +9,11 @@ namespace _Scripts.Player
     public class PlayerGameState: MonoBehaviour
     {
         public UnityAction<WeaponType> OnWeaponChangeEvent;
-        
+        public PlayerEquipment PlayerEquipment;
         public InputReader inputReader;
+
+        [SerializeField] private Transform RiflePosition;
+        private GameObject _rifleInstance;
         
         public WeaponType CurrentWeaponType = WeaponType.None;
 
@@ -27,6 +30,7 @@ namespace _Scripts.Player
         public void SetWeaponType(WeaponType weaponType)
         {
             CurrentWeaponType = weaponType;
+            _rifleInstance = Instantiate(PlayerEquipment.WeaponSlot1.WeaponPrefab, RiflePosition);
             OnWeaponChangeEvent?.Invoke(CurrentWeaponType);
         }
     }

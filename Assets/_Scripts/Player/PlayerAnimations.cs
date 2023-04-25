@@ -14,7 +14,7 @@ namespace _Scripts.Player
 
         private int _baseLayerIndex;
         private int _upperBodyLayerIndex;
-        
+        private float upperBodyLayerWeight = 0;
         private void Start()
         {
             PlayerGameState.OnWeaponChangeEvent += OnWeaponChangeEvent;
@@ -40,17 +40,42 @@ namespace _Scripts.Player
                 animator.CrossFade(baseStateHash, 0, _baseLayerIndex);
                 animatorLayerIndexToStateHash[_baseLayerIndex] = baseStateHash;
             }
-            
 
-            if (PlayerGameState.CurrentWeaponType == WeaponType.None) return;
+            if (PlayerGameState.CurrentWeaponType == WeaponType.None)
+            {
+                if (upperBodyLayerWeight != 0)
+                {
+                    ResetUpperBodyLayer();
+                }
+
+                return;
+            }
             
             var upperBodyStateHash =
                 PlayerConsts.WeaponTypeToStateTypeToAnimationHash[PlayerGameState.CurrentWeaponType][stateType];
 
-            if (animatorLayerIndexToStateHash[_upperBodyLayerIndex] == upperBodyStateHash) return;
+            if (upperBodyStateHash == animatorLayerIndexToStateHash[_upperBodyLayerIndex]) return;
+            
+            if (upperBodyLayerWeight == 0)
+            {
+                EnableUpperBodyYLayer();
+            }
             
             animator.CrossFade(upperBodyStateHash, 0, _upperBodyLayerIndex);
             animatorLayerIndexToStateHash[_upperBodyLayerIndex] = upperBodyStateHash;
+        }
+
+        private void EnableUpperBodyYLayer()
+        {
+            upperBodyLayerWeight = 1;
+            animator.SetLayerWeight(_upperBodyLayerIndex, upperBodyLayerWeight);
+        }
+
+        private void ResetUpperBodyLayer()
+        {
+            upperBodyLayerWeight = 0;
+            animator.SetLayerWeight(_upperBodyLayerIndex, upperBodyLayerWeight);
+            animatorLayerIndexToStateHash[_upperBodyLayerIndex] = -1;
         }
     }
 }

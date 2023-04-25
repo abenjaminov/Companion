@@ -7,56 +7,48 @@ namespace _Scripts.Player.States
     public class RunState : State
     {
         private readonly PlayerMovement _playerMovement;
-        private readonly PlayerGameState _playerGameState;
+        private readonly PlayerAnimations _playerAnimations;
         private readonly Animator _animator;
 
         private int _currentStateHash = -1;
         
-        public RunState(PlayerMovement playerMovement, Animator animator, PlayerGameState playerGameState)
+        public RunState(PlayerMovement playerMovement, Animator animator, PlayerAnimations playerAnimations)
         {
             _playerMovement = playerMovement;
             _animator = animator;
-            _playerGameState = playerGameState;
+            _playerAnimations = playerAnimations;
         }
         
         private void SetAnimation()
         {
-            var animationHashDict =
-                PlayerConsts.WeaponTypeToStateTypeToAnimationHash[_playerGameState.CurrentWeaponType];
+            var stateType = StateType.Run;
             
-            int newStateHash = _currentStateHash;
-
             if (_playerMovement.Velocity.z > 0)
             {
-                newStateHash = animationHashDict[StateType.Run];
                 if (_playerMovement.Velocity.x < 0)
                 {
-                    newStateHash = animationHashDict[StateType.RunStrafeLeft];
+                    stateType = StateType.RunStrafeLeft;
                 }
                 else if(_playerMovement.Velocity.x > 0)
                 {
-                    newStateHash = animationHashDict[StateType.RunStrafeRight];
+                    stateType = StateType.RunStrafeRight;
                 }
             }
             else if (_playerMovement.Velocity.z < 0)
             {
-                newStateHash = animationHashDict[StateType.RunBack];
+                stateType = StateType.RunBack;
                 
                 if (_playerMovement.Velocity.x < 0)
                 {
-                    newStateHash = animationHashDict[StateType.RunStrafeLeftBack];
+                    stateType = StateType.RunStrafeLeftBack;
                 }
                 else if(_playerMovement.Velocity.x > 0)
                 {
-                    newStateHash = animationHashDict[StateType.RunStrafeRightBack];
+                    stateType = StateType.RunStrafeRightBack;
                 }
             }
 
-            if (newStateHash == _currentStateHash) return;
-            
-            _animator.CrossFade(newStateHash,.25f,0);
-
-            _currentStateHash = newStateHash;
+            _playerAnimations.UpdateAnimations(stateType);
         }
         
         public override void OnEnter()

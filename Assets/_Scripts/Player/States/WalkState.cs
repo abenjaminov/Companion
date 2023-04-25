@@ -7,57 +7,50 @@ namespace _Scripts.Player.States
     public class WalkState: State
     {
         private readonly PlayerMovement _playerMovement;
-        private readonly PlayerGameState _playerGameState;
+        private readonly PlayerAnimations _playerAnimations;
         private readonly Animator _animator;
 
         private int _currentStateHash = -1;
         
-        public WalkState(PlayerMovement playerMovement, Animator animator, PlayerGameState playerGameState)
+        public WalkState(PlayerMovement playerMovement, Animator animator, PlayerAnimations playerAnimations)
         {
             _playerMovement = playerMovement;
             _animator = animator;
-            _playerGameState = playerGameState;
+            _playerAnimations = playerAnimations;
         }
 
         private void SetAnimation()
         {
-            var animationHashDict =
-                PlayerConsts.WeaponTypeToStateTypeToAnimationHash[_playerGameState.CurrentWeaponType];
-            
-            int newStateHash = _currentStateHash;
+            var stateType = StateType.Walk;
 
             if (_playerMovement.Velocity.z > 0)
             {
-                newStateHash = animationHashDict[StateType.Walk];
+                stateType = StateType.Walk;
                 
                 if (_playerMovement.Velocity.x < 0)
                 {
-                    newStateHash = animationHashDict[StateType.WalkStrafeLeft];;
+                    stateType = StateType.WalkStrafeLeft;
                 }
                 else if(_playerMovement.Velocity.x > 0)
                 {
-                    newStateHash = animationHashDict[StateType.WalkStrafeRight];;
+                    stateType = StateType.WalkStrafeRight;
                 }
             }
             else if (_playerMovement.Velocity.z < 0)
             {
-                newStateHash = animationHashDict[StateType.WalkBack];;
+                stateType = StateType.WalkBack;
                 
                 if (_playerMovement.Velocity.x < 0)
                 {
-                    newStateHash = animationHashDict[StateType.WalkStrafeLeftBack];;
+                    stateType = StateType.WalkStrafeLeftBack;
                 }
                 else if(_playerMovement.Velocity.x > 0)
                 {
-                    newStateHash = animationHashDict[StateType.WalkStrafeRightBack];;
+                    stateType = StateType.WalkStrafeRightBack;
                 }
             }
 
-            if (newStateHash == _currentStateHash) return;
-            
-            _animator.CrossFade(newStateHash,.25f,0);
-
-            _currentStateHash = newStateHash;
+            _playerAnimations.UpdateAnimations(stateType);
         }
         
         public override void OnEnter()
