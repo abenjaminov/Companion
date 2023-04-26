@@ -30,7 +30,16 @@ namespace _Scripts.Player
         public void SetWeaponType(WeaponType weaponType)
         {
             CurrentWeaponType = weaponType;
-            _rifleInstance = Instantiate(PlayerEquipment.WeaponSlot1.WeaponPrefab, RiflePosition);
+            if (weaponType == WeaponType.Rifle)
+            {
+                _rifleInstance = Instantiate(PlayerEquipment.WeaponSlot1.WeaponPrefab, RiflePosition);
+            }
+            else if (weaponType == WeaponType.None && _rifleInstance != null)
+            {
+                Destroy(_rifleInstance.gameObject);
+                _rifleInstance = null;
+            }
+            
             OnWeaponChangeEvent?.Invoke(CurrentWeaponType);
         }
     }

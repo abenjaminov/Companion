@@ -13,6 +13,7 @@ namespace _Scripts.Player
         [SerializeField] private InputReader inputReader;
         
         [HideInInspector] public Vector3 Velocity;
+        [HideInInspector] public Vector3 LocalMovementDirection;
         private CharacterController _characterController;
         
         private void Start()
@@ -38,13 +39,15 @@ namespace _Scripts.Player
 
         private void ChangeHorizontalSpeedAccordingToInput(float speed)
         {
-            var horizontalMovement = inputReader.movementDirection * speed;
-            Velocity = new Vector3(horizontalMovement.x, Velocity.y, horizontalMovement.y);
+            // var horizontalMovement = inputReader.movementDirection * speed * new Vector2 (transform.forward.x, transform.forward.z);
+            LocalMovementDirection =  new Vector3(inputReader.movementDirection.x,0, inputReader.movementDirection.y);
+            var worldDirection = transform.TransformDirection(LocalMovementDirection);
+            Velocity = worldDirection * speed;
         }
         
         private void Update()
         {
-            _characterController.Move(Velocity * Time.deltaTime);
+            _characterController.Move( Velocity * Time.deltaTime);
         }
     }
 }

@@ -73,6 +73,15 @@ namespace _Scripts.Systems.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Aim"",
+                    ""type"": ""Button"",
+                    ""id"": ""478d3872-a235-4b7c-9e01-3cb8f1c09b41"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -174,6 +183,17 @@ namespace _Scripts.Systems.Input
                     ""action"": ""ToggleWeapon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a5e68d6a-4b75-4e37-a82c-659b009fcaf3"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Aim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -204,6 +224,7 @@ namespace _Scripts.Systems.Input
             m_PlayerGameplay_Look = m_PlayerGameplay.FindAction("Look", throwIfNotFound: true);
             m_PlayerGameplay_Run = m_PlayerGameplay.FindAction("Run", throwIfNotFound: true);
             m_PlayerGameplay_ToggleWeapon = m_PlayerGameplay.FindAction("ToggleWeapon", throwIfNotFound: true);
+            m_PlayerGameplay_Aim = m_PlayerGameplay.FindAction("Aim", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -270,6 +291,7 @@ namespace _Scripts.Systems.Input
         private readonly InputAction m_PlayerGameplay_Look;
         private readonly InputAction m_PlayerGameplay_Run;
         private readonly InputAction m_PlayerGameplay_ToggleWeapon;
+        private readonly InputAction m_PlayerGameplay_Aim;
         public struct PlayerGameplayActions
         {
             private @InputActions m_Wrapper;
@@ -279,6 +301,7 @@ namespace _Scripts.Systems.Input
             public InputAction @Look => m_Wrapper.m_PlayerGameplay_Look;
             public InputAction @Run => m_Wrapper.m_PlayerGameplay_Run;
             public InputAction @ToggleWeapon => m_Wrapper.m_PlayerGameplay_ToggleWeapon;
+            public InputAction @Aim => m_Wrapper.m_PlayerGameplay_Aim;
             public InputActionMap Get() { return m_Wrapper.m_PlayerGameplay; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -303,6 +326,9 @@ namespace _Scripts.Systems.Input
                 @ToggleWeapon.started += instance.OnToggleWeapon;
                 @ToggleWeapon.performed += instance.OnToggleWeapon;
                 @ToggleWeapon.canceled += instance.OnToggleWeapon;
+                @Aim.started += instance.OnAim;
+                @Aim.performed += instance.OnAim;
+                @Aim.canceled += instance.OnAim;
             }
 
             private void UnregisterCallbacks(IPlayerGameplayActions instance)
@@ -322,6 +348,9 @@ namespace _Scripts.Systems.Input
                 @ToggleWeapon.started -= instance.OnToggleWeapon;
                 @ToggleWeapon.performed -= instance.OnToggleWeapon;
                 @ToggleWeapon.canceled -= instance.OnToggleWeapon;
+                @Aim.started -= instance.OnAim;
+                @Aim.performed -= instance.OnAim;
+                @Aim.canceled -= instance.OnAim;
             }
 
             public void RemoveCallbacks(IPlayerGameplayActions instance)
@@ -355,6 +384,7 @@ namespace _Scripts.Systems.Input
             void OnLook(InputAction.CallbackContext context);
             void OnRun(InputAction.CallbackContext context);
             void OnToggleWeapon(InputAction.CallbackContext context);
+            void OnAim(InputAction.CallbackContext context);
         }
     }
 }

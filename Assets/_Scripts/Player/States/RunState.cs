@@ -23,26 +23,26 @@ namespace _Scripts.Player.States
         {
             var stateType = StateType.Run;
             
-            if (_playerMovement.Velocity.z > 0)
+            if (_playerMovement.LocalMovementDirection.z > 0)
             {
-                if (_playerMovement.Velocity.x < 0)
+                if (_playerMovement.LocalMovementDirection.x < 0)
                 {
                     stateType = StateType.RunStrafeLeft;
                 }
-                else if(_playerMovement.Velocity.x > 0)
+                else if(_playerMovement.LocalMovementDirection.x > 0)
                 {
                     stateType = StateType.RunStrafeRight;
                 }
             }
-            else if (_playerMovement.Velocity.z < 0)
+            else if (_playerMovement.LocalMovementDirection.z < 0)
             {
                 stateType = StateType.RunBack;
                 
-                if (_playerMovement.Velocity.x < 0)
+                if (_playerMovement.LocalMovementDirection.x < 0)
                 {
                     stateType = StateType.RunStrafeLeftBack;
                 }
-                else if(_playerMovement.Velocity.x > 0)
+                else if(_playerMovement.LocalMovementDirection.x > 0)
                 {
                     stateType = StateType.RunStrafeRightBack;
                 }

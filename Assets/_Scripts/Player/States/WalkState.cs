@@ -23,28 +23,28 @@ namespace _Scripts.Player.States
         {
             var stateType = StateType.Walk;
 
-            if (_playerMovement.Velocity.z > 0)
+            if (_playerMovement.LocalMovementDirection.z > 0)
             {
                 stateType = StateType.Walk;
                 
-                if (_playerMovement.Velocity.x < 0)
+                if (_playerMovement.LocalMovementDirection.x < 0)
                 {
                     stateType = StateType.WalkStrafeLeft;
                 }
-                else if(_playerMovement.Velocity.x > 0)
+                else if(_playerMovement.LocalMovementDirection.x > 0)
                 {
                     stateType = StateType.WalkStrafeRight;
                 }
             }
-            else if (_playerMovement.Velocity.z < 0)
+            else if (_playerMovement.LocalMovementDirection.z < 0)
             {
                 stateType = StateType.WalkBack;
                 
-                if (_playerMovement.Velocity.x < 0)
+                if (_playerMovement.LocalMovementDirection.x < 0)
                 {
                     stateType = StateType.WalkStrafeLeftBack;
                 }
-                else if(_playerMovement.Velocity.x > 0)
+                else if(_playerMovement.LocalMovementDirection.x > 0)
                 {
                     stateType = StateType.WalkStrafeRightBack;
                 }
