@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using _Scripts.Player.Types;
+using _Scripts.Systems.InputSystem;
 using UnityEngine;
 
 namespace _Scripts.Player
@@ -9,6 +10,8 @@ namespace _Scripts.Player
     {
         [SerializeField] private PlayerGameState PlayerGameState;
         [SerializeField] private Animator animator;
+        [SerializeField] private InputReader InputReader;
+        
 
         private Dictionary<int, int> animatorLayerIndexToStateHash = new();
 
@@ -51,16 +54,25 @@ namespace _Scripts.Player
                 return;
             }
             
+            SetUpperBodyAnimations(stateType);
+        }
+
+        private void SetUpperBodyAnimations(StateType stateType)
+        {
+            var animationDictionary = !InputReader.IsAiming
+                ? PlayerConsts.WeaponTypeToStateTypeToAnimationHash
+                : PlayerConsts.AimingWeaponTypeToStateTypeToAnimationHash;
+            
             var upperBodyStateHash =
-                PlayerConsts.WeaponTypeToStateTypeToAnimationHash[PlayerGameState.CurrentWeaponType][stateType];
+                animationDictionary[PlayerGameState.CurrentWeaponType][stateType];
 
             if (upperBodyStateHash == animatorLayerIndexToStateHash[_upperBodyLayerIndex]) return;
-            
+
             if (upperBodyLayerWeight == 0)
             {
                 EnableUpperBodyYLayer();
             }
-            
+
             animator.CrossFade(upperBodyStateHash, 0, _upperBodyLayerIndex);
             animatorLayerIndexToStateHash[_upperBodyLayerIndex] = upperBodyStateHash;
         }

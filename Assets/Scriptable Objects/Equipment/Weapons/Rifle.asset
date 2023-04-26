@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Rifle
   m_EditorClassIdentifier: 
   WeaponPrefab: {fileID: 1296539039355890, guid: 5dbcdf5133186e14eb4ebc2122fbd108, type: 3}
-  FireRate: 300
+  FireRate: 475
   Damage: 30

@@ -16,6 +16,8 @@ namespace _Scripts.Systems.InputSystem
         [HideInInspector] public bool IsShooting;
 
         public UnityAction OnToggleWeaponClickedEvent;
+        public UnityAction OnShootStartEvent;
+        public UnityAction OnShootEndEvent;
 
         private InputActions _controls;
         
@@ -84,13 +86,16 @@ namespace _Scripts.Systems.InputSystem
         
         public void OnShoot(InputAction.CallbackContext context)
         {
+            Debug.Log("Shoot Input");
             if (context.performed)
             {
                 IsShooting = true;
+                OnShootStartEvent?.Invoke();
             }
             else if (context.canceled)
             {
                 IsShooting = false;
+                OnShootEndEvent?.Invoke();
             }
         }
     }

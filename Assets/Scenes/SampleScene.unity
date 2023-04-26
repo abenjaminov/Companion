@@ -1863,6 +1863,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerGameState: {fileID: 729560616}
   animator: {fileID: 95548616862345658}
+  InputReader: {fileID: 867644669}
 --- !u!114 &729560618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1975,6 +1976,7 @@ MonoBehaviour:
   MouseDelta: {x: 0, y: 0}
   IsMoving: 0
   IsAiming: 0
+  IsShooting: 0
 --- !u!4 &867644670
 Transform:
   m_ObjectHideFlags: 0
@@ -4477,7 +4479,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1052689593049076}
-  m_LocalRotation: {x: 0.9950197, y: -0.09967895, z: 1.3224718e-15, w: 7.094358e-17}
+  m_LocalRotation: {x: -0.9192787, y: 0.09208836, z: -0.038144227, w: -0.3807775}
   m_LocalPosition: {x: -0.10393265, y: 1.3322676e-17, z: 4.6155368e-17}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4485,7 +4487,7 @@ Transform:
   - {fileID: 4037064766088010}
   m_Father: {fileID: 4815093612841804}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -225, y: 0, z: 11.440994}
 --- !u!4 &4530751599043138
 Transform:
   m_ObjectHideFlags: 0
