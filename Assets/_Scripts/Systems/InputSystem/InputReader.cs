@@ -13,6 +13,7 @@ namespace _Scripts.Systems.InputSystem
         [HideInInspector] public Vector2 MouseDelta;
         [HideInInspector] public bool IsMoving;
         [HideInInspector] public bool IsAiming;
+        [HideInInspector] public bool IsShooting;
 
         public UnityAction OnToggleWeaponClickedEvent;
 
@@ -78,6 +79,18 @@ namespace _Scripts.Systems.InputSystem
             else if (context.canceled)
             {
                 IsAiming = false;
+            }
+        }
+        
+        public void OnShoot(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                IsShooting = true;
+            }
+            else if (context.canceled)
+            {
+                IsShooting = false;
             }
         }
     }
