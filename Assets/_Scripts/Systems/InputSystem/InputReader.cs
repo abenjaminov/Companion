@@ -86,7 +86,6 @@ namespace _Scripts.Systems.InputSystem
         
         public void OnShoot(InputAction.CallbackContext context)
         {
-            Debug.Log("Shoot Input");
             if (context.performed)
             {
                 IsShooting = true;

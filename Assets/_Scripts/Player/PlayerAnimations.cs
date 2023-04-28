@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using _Scripts.Player.Types;
 using _Scripts.Systems.InputSystem;
 using UnityEngine;
@@ -9,85 +10,54 @@ namespace _Scripts.Player
     public class PlayerAnimations : MonoBehaviour
     {
         [SerializeField] private PlayerGameState PlayerGameState;
-        [SerializeField] private Animator animator;
+        [SerializeField] private Animator Animator;
         [SerializeField] private InputReader InputReader;
+
+        private List<AnimationPredicate> _animationPredicates = new();
         
-
-        private Dictionary<int, int> animatorLayerIndexToStateHash = new();
-
-        private int _baseLayerIndex;
-        private int _upperBodyLayerIndex;
-        private float upperBodyLayerWeight = 0;
         private void Start()
         {
-            PlayerGameState.OnWeaponChangeEvent += OnWeaponChangeEvent;
-            _baseLayerIndex = animator.GetLayerIndex("Base Layer");
-            _upperBodyLayerIndex = animator.GetLayerIndex("Upper Body");
+            foreach (var key in PlayerConsts.WeaponTypeToStateTypeToAnimationHash[WeaponType.None].Keys)
+            {
+                _animationPredicates.Add(new AnimationPredicate()
+                {
+                    AnimationHash = PlayerConsts.WeaponTypeToStateTypeToAnimationHash[WeaponType.None][key],
+                    Predicate = (stateType) => !InputReader.IsAiming && PlayerGameState.CurrentWeaponType == WeaponType.None && stateType == key
+                });
+            }
             
-            animatorLayerIndexToStateHash.Add(_baseLayerIndex, -1);
-            animatorLayerIndexToStateHash.Add(_upperBodyLayerIndex, -1);
-        }
-
-        private void OnWeaponChangeEvent(WeaponType weaponType)
-        {
-            animator.SetLayerWeight(animator.GetLayerIndex("Upper Body"), weaponType == WeaponType.None ? 0 : 1);
+            foreach (var key in PlayerConsts.WeaponTypeToStateTypeToAnimationHash[WeaponType.Rifle].Keys)
+            {
+                _animationPredicates.Add(new AnimationPredicate()
+                {
+                    AnimationHash = PlayerConsts.WeaponTypeToStateTypeToAnimationHash[WeaponType.Rifle][key],
+                    Predicate = (stateType) => !InputReader.IsAiming && PlayerGameState.CurrentWeaponType == WeaponType.Rifle && stateType == key
+                });
+            }
+            
+            foreach (var key in PlayerConsts.AimingWeaponTypeToStateTypeToAnimationHash[WeaponType.Rifle].Keys)
+            {
+                _animationPredicates.Add(new AnimationPredicate()
+                {
+                    AnimationHash = PlayerConsts.AimingWeaponTypeToStateTypeToAnimationHash[WeaponType.Rifle][key],
+                    Predicate = (stateType) => InputReader.IsAiming && PlayerGameState.CurrentWeaponType == WeaponType.Rifle && stateType == key
+                });
+            }
         }
 
         public void UpdateAnimations(StateType stateType)
         {
-            var baseStateHash =
-                PlayerConsts.WeaponTypeToStateTypeToAnimationHash[WeaponType.None][stateType];
+            var index = _animationPredicates.FindIndex(x => x.Predicate(stateType));
 
-            if (baseStateHash != animatorLayerIndexToStateHash[_baseLayerIndex])
-            {
-                animator.CrossFade(baseStateHash, 0, _baseLayerIndex);
-                animatorLayerIndexToStateHash[_baseLayerIndex] = baseStateHash;
-            }
-
-            if (PlayerGameState.CurrentWeaponType == WeaponType.None)
-            {
-                if (upperBodyLayerWeight != 0)
-                {
-                    ResetUpperBodyLayer();
-                }
-
-                return;
-            }
+            if (index == -1) return;
             
-            SetUpperBodyAnimations(stateType);
+            Animator.CrossFade(_animationPredicates[index].AnimationHash, 0, 0);
         }
 
-        private void SetUpperBodyAnimations(StateType stateType)
+        private struct AnimationPredicate
         {
-            var animationDictionary = !InputReader.IsAiming
-                ? PlayerConsts.WeaponTypeToStateTypeToAnimationHash
-                : PlayerConsts.AimingWeaponTypeToStateTypeToAnimationHash;
-            
-            var upperBodyStateHash =
-                animationDictionary[PlayerGameState.CurrentWeaponType][stateType];
-
-            if (upperBodyStateHash == animatorLayerIndexToStateHash[_upperBodyLayerIndex]) return;
-
-            if (upperBodyLayerWeight == 0)
-            {
-                EnableUpperBodyYLayer();
-            }
-
-            animator.CrossFade(upperBodyStateHash, 0, _upperBodyLayerIndex);
-            animatorLayerIndexToStateHash[_upperBodyLayerIndex] = upperBodyStateHash;
-        }
-
-        private void EnableUpperBodyYLayer()
-        {
-            upperBodyLayerWeight = 1;
-            animator.SetLayerWeight(_upperBodyLayerIndex, upperBodyLayerWeight);
-        }
-
-        private void ResetUpperBodyLayer()
-        {
-            upperBodyLayerWeight = 0;
-            animator.SetLayerWeight(_upperBodyLayerIndex, upperBodyLayerWeight);
-            animatorLayerIndexToStateHash[_upperBodyLayerIndex] = -1;
+            public Func<StateType, bool> Predicate;
+            public int AnimationHash;
         }
     }
 }
